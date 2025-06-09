@@ -21,7 +21,7 @@ namespace flock
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
-        {
+        { Graphics graphics = e.Graphics;
             SolidBrush brush = new SolidBrush(Color.Black);
             bool isNullOrEmpty = flockers?.Any() != true;
             if (isNullOrEmpty) {return; }
@@ -29,7 +29,9 @@ namespace flock
             {
                 foreach (Bird b in flockers)
                 {
-                    e.Graphics.FillEllipse(brush,b.birdPosition.X,b.birdPosition.Y,5,5);
+                    
+                    //e.Graphics.FillEllipse(brush,b.birdPosition.X,b.birdPosition.Y,5,5);
+                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.Red);
                 }
             }
         }

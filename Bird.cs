@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Numerics;
 using System.Text;
@@ -23,7 +24,7 @@ namespace flock
             birdPosition = new Vector2(tempX, tempY);
             var (x, y) = RandomPoint.GenerateRandomPoint(5, rand);
             vector = new Vector2(x, y);
-            _form1.Invalidate();
+           
 
         }
         public void Update()
@@ -32,11 +33,10 @@ namespace flock
             
             //birdPosition= Vector2.Add( birdPosition, Alignment());
             birdPosition = Vector2.Add(birdPosition, vector);
-            //if (birdPosition.X < 0 || birdPosition.X > _form1.Width) {vector.X = -vector.X;}
-            //if (birdPosition.Y < 0 || birdPosition.Y > _form1.Height) { vector.Y = -vector.Y;}
             
             
-            //_form1.Invalidate();
+            
+            
         }
         public void Cohesion()// the average direction of the flock
         {
@@ -63,9 +63,40 @@ namespace flock
             {
                 if (Vector2.Distance(b.birdPosition, this.birdPosition) < 5)
                 {
-                    vector.X = -vector.X;
-                    vector.Y = -vector.Y;
+                   
                 }
+            }
+        }
+        public void DrawPointingTriangle(Graphics g, Vector2 origin, Vector2 directionVector,  Color color)
+        {
+            // Normalize the direction vector
+            float length = (float)Math.Sqrt(directionVector.X * directionVector.X + directionVector.Y * directionVector.Y);
+            PointF normalizedDirection = new PointF(directionVector.X / length, directionVector.Y / length);
+
+            // Calculate perpendicular vector (for the base of the triangle)
+            PointF perpendicular = new PointF(-normalizedDirection.Y, normalizedDirection.X);
+
+            // Define triangle dimensions
+            float height = 15;
+            float baseWidth = 15 * 0.6f; // Adjust this ratio to change triangle shape
+
+            // Calculate the three points
+            PointF tip = new PointF(
+                origin.X + normalizedDirection.X * height,
+                origin.Y + normalizedDirection.Y * height);
+
+            PointF basePoint1 = new PointF(
+                origin.X - normalizedDirection.X * height * 0.2f - perpendicular.X * baseWidth / 2,
+                origin.Y - normalizedDirection.Y * height * 0.2f - perpendicular.Y * baseWidth / 2);
+
+            PointF basePoint2 = new PointF(
+                origin.X - normalizedDirection.X * height * 0.2f + perpendicular.X * baseWidth / 2,
+                origin.Y - normalizedDirection.Y * height * 0.2f + perpendicular.Y * baseWidth / 2);
+
+            // Draw the triangle
+            using (Brush brush = new SolidBrush(color))
+            {
+                g.FillPolygon(brush, new PointF[] { tip, basePoint1, basePoint2 });
             }
         }
     }
