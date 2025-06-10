@@ -31,7 +31,7 @@ namespace flock
                 {
                     
                     //e.Graphics.FillEllipse(brush,b.birdPosition.X,b.birdPosition.Y,5,5);
-                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.Red);
+                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.Black);
                 }
             }
         }
@@ -39,7 +39,7 @@ namespace flock
         private void Form1_Load(object sender, EventArgs e)
         {
             Bird tempBird;
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 150; i++)
             {
                 tempBird = new Bird(this);
                 flockers.Add(tempBird);

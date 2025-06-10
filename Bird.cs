@@ -47,7 +47,7 @@ namespace flock
             {
                 aveDirection += b.vector;
             }
-            aveDirection /= 500;
+            aveDirection /= 200;
             return aveDirection/_form1.flockers.Count;
         }
         public Vector2 Alignment()//move towards average position of flock
@@ -73,7 +73,7 @@ namespace flock
             {
                 if (b != this)
                 {
-                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 10)
+                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 5)
                     {
                         
                         avoidFactor.X = avoidFactor.X - b.birdPosition.X;
