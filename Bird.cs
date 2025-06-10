@@ -91,10 +91,10 @@ namespace flock
         public Vector2 StayOnScreen() //keep all birds on screen
         {
             Vector2 avoidFactor = new Vector2(0f, 0f);
-            if (this.birdPosition.X < 100) { avoidFactor.X += 0.5f; }
-            if (this.birdPosition.Y < 100) { avoidFactor.Y += 0.5f; }
-            if (this.birdPosition.X > _form1.Width - 100) { avoidFactor.X -= 0.5f; }
-            if (this.birdPosition.Y > _form1.Height - 100) { avoidFactor.Y -= 0.5f; }
+            if (this.birdPosition.X < 100) { avoidFactor.X += 1.0f; }
+            if (this.birdPosition.Y < 100) { avoidFactor.Y += 1.0f; }
+            if (this.birdPosition.X > _form1.Width - 100) { avoidFactor.X -= 1.0f; }
+            if (this.birdPosition.Y > _form1.Height - 100) { avoidFactor.Y -= 1.0f; }
             return avoidFactor;
         }
         public void DrawPointingTriangle(Graphics g, Vector2 origin, Vector2 directionVector,  Color color)
