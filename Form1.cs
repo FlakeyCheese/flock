@@ -39,7 +39,7 @@ namespace flock
         private void Form1_Load(object sender, EventArgs e)
         {
             Bird tempBird;
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 50; i++)
             {
                 tempBird = new Bird(this);
                 flockers.Add(tempBird);

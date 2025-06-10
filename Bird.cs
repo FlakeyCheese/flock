@@ -33,7 +33,7 @@ namespace flock
             //Avoidance();
 
             //birdPosition= Vector2.Add( birdPosition, Alignment());
-            vector = vector + Alignment()+Avoidance()+StayOnScreen();
+            vector = vector + Alignment() + Avoidance() + Cohesion() +StayOnScreen();
             birdPosition = birdPosition + vector ;
             
             
@@ -41,9 +41,14 @@ namespace flock
             
             
         }
-        public void Cohesion()// the average direction of the flock
-        {
-            
+        public Vector2 Cohesion()// the average direction of the flock
+        {   Vector2 aveDirection = Vector2.Zero;
+            foreach (Bird b in _form1.flockers)
+            {
+                aveDirection += b.vector;
+            }
+            aveDirection /= 500;
+            return aveDirection/_form1.flockers.Count;
         }
         public Vector2 Alignment()//move towards average position of flock
         {
@@ -54,8 +59,7 @@ namespace flock
             }
             destination = destination/ _form1.flockers.Count ;
             Vector2 newVector = new Vector2(0,0);
-                //float destX = 600f;
-                //float destY = 325f;
+                
                 newVector = new Vector2((destination.X-birdPosition.X)/500,(destination.Y - birdPosition.Y)/500);
                 return newVector;
             
@@ -69,7 +73,7 @@ namespace flock
             {
                 if (b != this)
                 {
-                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 50)
+                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 10)
                     {
                         
                         avoidFactor.X = avoidFactor.X - b.birdPosition.X;
