@@ -14,16 +14,12 @@ namespace flock
             double theta = random.NextDouble() * 2 * Math.PI;
 
             // Calculate corresponding radius (r) using inverse CDF of uniform distribution
-            Random rnd = new Random();// new random value to choose between sircle and classic explosion
+            
             double r = 0;
-            if (rnd.Next(0, 2) == 0)//using the 0, 1 generated to switch between circular (r = 0.5 ) and random explosions
-            {
-                r = Math.Sqrt(random.NextDouble());//set a random value for r
-            }
-            else
-            {
+            
+            
                 r = 0.5; //set r to 0.5
-            }
+            
 
             // Convert polar coordinates (r, theta) to Cartesian coordinates (x, y)
             double x = radius * r * Math.Cos(theta);

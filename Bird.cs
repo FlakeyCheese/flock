@@ -14,6 +14,7 @@ namespace flock
     {
         public Vector2 birdPosition;//position of this bird instance
         public Vector2 vector;//vector representing direction and speed
+        
         private readonly Form1 _form1;
         public Bird(Form1 form1) 
         {
@@ -30,9 +31,11 @@ namespace flock
         public void Update()
         {
             //Avoidance();
-            
+
             //birdPosition= Vector2.Add( birdPosition, Alignment());
-            birdPosition = Vector2.Add(birdPosition, vector);
+            vector = vector + Alignment()+Avoidance()+StayOnScreen();
+            birdPosition = birdPosition + vector ;
+            
             
             
             
@@ -44,28 +47,51 @@ namespace flock
         }
         public Vector2 Alignment()//move towards average position of flock
         {
-            //list of bird positions
-            List<Vector2> positionList = new List<Vector2>();
+            Vector2 destination = new Vector2(0f, 0f);
             foreach (Bird b in _form1.flockers)
             {
-                if (Vector2.Distance(b.birdPosition, this.birdPosition) < 50)
-                //move BirdPosition to a list
-                { positionList.Add(b.birdPosition); }
+                destination = destination + b.birdPosition; 
             }
-            Vector2 avePos = new Vector2((positionList.Average(x => x.X)), (positionList.Average(y => y.Y)));
-            avePos.X = avePos.X / 200;
-            avePos.Y = avePos.Y / 200;
-            return avePos;
+            destination = destination/ _form1.flockers.Count ;
+            Vector2 newVector = new Vector2(0,0);
+                //float destX = 600f;
+                //float destY = 325f;
+                newVector = new Vector2((destination.X-birdPosition.X)/500,(destination.Y - birdPosition.Y)/500);
+                return newVector;
+            
+            
         }
-        public void Avoidance()//avoid hitting neighbours
+        public Vector2 Avoidance()//avoid hitting neighbours
         {
+            
+            Vector2 avoidFactor = new Vector2(0, 0);
             foreach (Bird b in _form1.flockers)
             {
-                if (Vector2.Distance(b.birdPosition, this.birdPosition) < 5)
+                if (b != this)
                 {
-                   
+                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 50)
+                    {
+                        
+                        avoidFactor.X = avoidFactor.X - b.birdPosition.X;
+                        avoidFactor.Y = avoidFactor.Y - b.birdPosition.Y;
+                    }
                 }
+                
             }
+            avoidFactor.X /= 500;
+            avoidFactor.Y /= 500;
+            return avoidFactor;
+
+        }
+
+        public Vector2 StayOnScreen() //keep all birds on screen
+        {
+            Vector2 avoidFactor = new Vector2(0f, 0f);
+            if (this.birdPosition.X < 100) { avoidFactor.X += 0.5f; }
+            if (this.birdPosition.Y < 100) { avoidFactor.Y += 0.5f; }
+            if (this.birdPosition.X > _form1.Width - 100) { avoidFactor.X -= 0.5f; }
+            if (this.birdPosition.Y > _form1.Height - 100) { avoidFactor.Y -= 0.5f; }
+            return avoidFactor;
         }
         public void DrawPointingTriangle(Graphics g, Vector2 origin, Vector2 directionVector,  Color color)
         {
