@@ -8,22 +8,17 @@ namespace flock
 {
     internal class RandomPoint
     {
-        public static (float X, float Y) GenerateRandomPoint(double radius, Random random)
+        public static (float X, float Y) GenerateRandomPoint(double maxSpeed, Random random)
         {
-            // Generate random angle (theta) between 0 and 2π
+            // Generate random angle
             double theta = random.NextDouble() * 2 * Math.PI;
 
-            // Calculate corresponding radius (r) using inverse CDF of uniform distribution
-            
-            double r = 0;
-            
-            
-                r = 0.5; //set r to 0.5
-            
+            // Generate random speed between 0 and maxSpeed
+            double speed = random.NextDouble() * maxSpeed;
 
-            // Convert polar coordinates (r, theta) to Cartesian coordinates (x, y)
-            double x = radius * r * Math.Cos(theta);
-            double y = radius * r * Math.Sin(theta);
+            // Convert to Cartesian coordinates
+            double x = speed * Math.Cos(theta);
+            double y = speed * Math.Sin(theta);
 
             return ((float)x, (float)y);
         }

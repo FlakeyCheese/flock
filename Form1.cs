@@ -44,6 +44,9 @@ namespace flock
                 tempBird = new Bird(this);
                 flockers.Add(tempBird);
             }
+            // Speed up the timer - lower interval = faster updates
+            timer1.Interval = 16; // ~60 FPS (was probably 50ms = 20 FPS)
+            timer1.Start();
         }
 
         private void timer1_Tick(object sender, EventArgs e)

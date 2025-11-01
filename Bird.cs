@@ -9,94 +9,176 @@ using System.Windows.Forms;
 
 namespace flock
 {
-    public class Bird     
-
+    public class Bird
     {
-        public Vector2 birdPosition;//position of this bird instance
-        public Vector2 vector;//vector representing direction and speed
-        
+        public Vector2 birdPosition;
+        public Vector2 vector;
+
         private readonly Form1 _form1;
-        public Bird(Form1 form1) 
+        private const float MAX_SPEED = 3f;
+        private const float MAX_FORCE = 0.1f;
+
+        public Bird(Form1 form1)
         {
             this._form1 = form1;
-            Random rand = new Random(Guid.NewGuid().GetHashCode());//avery random seed
-            int tempX = rand.Next(10, _form1.Width-10);//generate random start point for the bird
-            int tempY = rand.Next(10, _form1.Height-10); //inside the form bounds
+            Random rand = new Random(Guid.NewGuid().GetHashCode());
+            int tempX = rand.Next(10, _form1.Width - 10);
+            int tempY = rand.Next(10, _form1.Height - 10);
             birdPosition = new Vector2(tempX, tempY);
-            var (x, y) = RandomPoint.GenerateRandomPoint(5, rand);
+            var (x, y) = RandomPoint.GenerateRandomPoint(MAX_SPEED, rand);
             vector = new Vector2(x, y);
-           
-
         }
+
         public void Update()
         {
-            //Avoidance();
+            // Apply flocking rules with proper weights
+            Vector2 alignment = Alignment() * 1.0f;
+            Vector2 cohesion = Cohesion() * 1.0f;
+            Vector2 avoidance = Avoidance() * 1.5f; // Avoidance is most important
+            Vector2 stayOnScreen = StayOnScreen() * 1.0f;
 
-            //birdPosition= Vector2.Add( birdPosition, Alignment());
-            vector = vector + Alignment() + Avoidance() + Cohesion() +StayOnScreen();
-            birdPosition = birdPosition + vector ;
-            
-            
-            
-            
-            
+            // Limit the forces
+            alignment = LimitForce(alignment);
+            cohesion = LimitForce(cohesion);
+            avoidance = LimitForce(avoidance);
+            stayOnScreen = LimitForce(stayOnScreen);
+
+            // Apply all forces
+            vector = vector + alignment + cohesion + avoidance + stayOnScreen;
+
+            // Limit speed
+            vector = LimitSpeed(vector);
+
+            // Update position
+            birdPosition = birdPosition + vector;
         }
-        public Vector2 Cohesion()// the average direction of the flock
-        {   Vector2 aveDirection = Vector2.Zero;
-            foreach (Bird b in _form1.flockers)
-            {
-                aveDirection += b.vector;
-            }
-            aveDirection /= 200;
-            return aveDirection/_form1.flockers.Count;
-        }
-        public Vector2 Alignment()//move towards average position of flock
+
+        private Vector2 LimitForce(Vector2 force)
         {
-            Vector2 destination = new Vector2(0f, 0f);
-            foreach (Bird b in _form1.flockers)
+            if (force.Length() > MAX_FORCE)
             {
-                destination = destination + b.birdPosition; 
+                return Vector2.Normalize(force) * MAX_FORCE;
             }
-            destination = destination/ _form1.flockers.Count ;
-            Vector2 newVector = new Vector2(0,0);
-                
-                newVector = new Vector2((destination.X-birdPosition.X)/500,(destination.Y - birdPosition.Y)/500);
-                return newVector;
-            
-            
+            return force;
         }
-        public Vector2 Avoidance()//avoid hitting neighbours
+
+        private Vector2 LimitSpeed(Vector2 velocity)
         {
-            
-            Vector2 avoidFactor = new Vector2(0, 0);
-            foreach (Bird b in _form1.flockers)
+            if (velocity.Length() > MAX_SPEED)
             {
-                if (b != this)
+                return Vector2.Normalize(velocity) * MAX_SPEED;
+            }
+            return velocity;
+        }
+
+        public Vector2 Alignment()
+        {
+            Vector2 averageVelocity = Vector2.Zero;
+            int count = 0;
+
+            foreach (Bird other in _form1.flockers)
+            {
+                if (other != this)
                 {
-                    if (Vector2.Distance(b.birdPosition, this.birdPosition) < 5)
+                    float distance = Vector2.Distance(birdPosition, other.birdPosition);
+                    if (distance < 50) // Perception radius
                     {
-                        
-                        avoidFactor.X = avoidFactor.X - b.birdPosition.X;
-                        avoidFactor.Y = avoidFactor.Y - b.birdPosition.Y;
+                        averageVelocity += other.vector;
+                        count++;
                     }
                 }
-                
             }
-            avoidFactor.X /= 500;
-            avoidFactor.Y /= 500;
-            return avoidFactor;
 
+            if (count > 0)
+            {
+                averageVelocity /= count;
+                averageVelocity = Vector2.Normalize(averageVelocity) * MAX_SPEED;
+                Vector2 steer = averageVelocity - vector;
+                return steer;
+            }
+
+            return Vector2.Zero;
         }
 
-        public Vector2 StayOnScreen() //keep all birds on screen
+        public Vector2 Cohesion()
         {
-            Vector2 avoidFactor = new Vector2(0f, 0f);
-            if (this.birdPosition.X < 100) { avoidFactor.X += 1.0f; }
-            if (this.birdPosition.Y < 100) { avoidFactor.Y += 1.0f; }
-            if (this.birdPosition.X > _form1.Width - 100) { avoidFactor.X -= 1.0f; }
-            if (this.birdPosition.Y > _form1.Height - 100) { avoidFactor.Y -= 1.0f; }
-            return avoidFactor;
+            Vector2 centerOfMass = Vector2.Zero;
+            int count = 0;
+
+            foreach (Bird other in _form1.flockers)
+            {
+                if (other != this)
+                {
+                    float distance = Vector2.Distance(birdPosition, other.birdPosition);
+                    if (distance < 150) // Larger radius for cohesion
+                    {
+                        centerOfMass += other.birdPosition;
+                        count++;
+                    }
+                }
+            }
+
+            if (count > 0)
+            {
+                centerOfMass /= count;
+                Vector2 desired = centerOfMass - birdPosition;
+                desired = Vector2.Normalize(desired) * MAX_SPEED;
+                Vector2 steer = desired - vector;
+                return steer;
+            }
+
+            return Vector2.Zero;
         }
+
+        public Vector2 Avoidance()
+        {
+            Vector2 steer = Vector2.Zero;
+            int count = 0;
+
+            foreach (Bird other in _form1.flockers)
+            {
+                if (other != this)
+                {
+                    float distance = Vector2.Distance(birdPosition, other.birdPosition);
+                    if (distance < 50) // Personal space radius
+                    {
+                        Vector2 diff = birdPosition - other.birdPosition;
+                        diff = Vector2.Normalize(diff);
+                        diff /= distance; // Weight by distance (closer = stronger repulsion)
+                        steer += diff;
+                        count++;
+                    }
+                }
+            }
+
+            if (count > 0)
+            {
+                steer /= count;
+                steer = Vector2.Normalize(steer) * MAX_SPEED;
+                steer -= vector;
+            }
+
+            return steer;
+        }
+
+        public Vector2 StayOnScreen()
+        {
+            // Wrap around screen edges instead of applying force
+            if (birdPosition.X < -10)
+                birdPosition.X = _form1.Width + 10;
+            else if (birdPosition.X > _form1.Width + 10)
+                birdPosition.X = -10;
+
+            if (birdPosition.Y < -10)
+                birdPosition.Y = _form1.Height + 10;
+            else if (birdPosition.Y > _form1.Height + 10)
+                birdPosition.Y = -10;
+
+            return Vector2.Zero; // No steering force for wrapping
+        }
+
+
+
         public void DrawPointingTriangle(Graphics g, Vector2 origin, Vector2 directionVector,  Color color)
         {
             // Normalize the direction vector
