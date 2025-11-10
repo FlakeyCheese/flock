@@ -31,13 +31,15 @@ namespace flock
                 {
                     
                     //e.Graphics.FillEllipse(brush,b.birdPosition.X,b.birdPosition.Y,5,5);
-                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.Black);
+                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.OrangeRed);
                 }
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.WindowState = FormWindowState.Maximized;//maximised form
+            this.DoubleBuffered = true;//double buffered to smooth animations
             Bird tempBird;
             for (int i = 0; i < 150; i++)
             {
