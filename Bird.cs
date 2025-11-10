@@ -189,8 +189,8 @@ namespace flock
             PointF perpendicular = new PointF(-normalizedDirection.Y, normalizedDirection.X);
 
             // Define triangle dimensions
-            float height = 15;
-            float baseWidth = 15 * 0.6f; // Adjust this ratio to change triangle shape
+            float height = 10;//changed from 15 to 10
+            float baseWidth = 10 * 0.6f; // Adjust this ratio to change triangle shape
 
             // Calculate the three points
             PointF tip = new PointF(

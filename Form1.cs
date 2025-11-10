@@ -31,7 +31,7 @@ namespace flock
                 {
                     
                     //e.Graphics.FillEllipse(brush,b.birdPosition.X,b.birdPosition.Y,5,5);
-                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.OrangeRed);
+                    b.DrawPointingTriangle(graphics,b.birdPosition,b.vector,Color.Red);
                 }
             }
         }
@@ -41,7 +41,7 @@ namespace flock
             this.WindowState = FormWindowState.Maximized;//maximised form
             this.DoubleBuffered = true;//double buffered to smooth animations
             Bird tempBird;
-            for (int i = 0; i < 150; i++)
+            for (int i = 0; i < 300; i++)
             {
                 tempBird = new Bird(this);
                 flockers.Add(tempBird);
