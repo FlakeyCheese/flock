@@ -62,19 +62,10 @@ namespace flock
             this.Invalidate();
         }
 
-        private void trackBar1_ValueChanged(object sender, EventArgs e)
-        {
-            
-        }
+      
 
-        private void trackBar3_ValueChanged(object sender, EventArgs e)
-        {
-            
-        }
+        
 
-        private void trackBar2_ValueChanged(object sender, EventArgs e)
-        {
-            
-        }
+        
     }
 }
