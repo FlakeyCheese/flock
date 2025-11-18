@@ -110,7 +110,7 @@ namespace flock
                 if (other != this)
                 {
                     float distance = Vector2.Distance(birdPosition, other.birdPosition);
-                    if (distance < 150) // Larger radius for cohesion
+                    if (distance < 250) // Larger radius for cohesion
                     {
                         centerOfMass += other.birdPosition;
                         count++;

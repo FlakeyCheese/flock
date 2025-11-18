@@ -49,6 +49,10 @@ namespace flock
             // Speed up the timer - lower interval = faster updates
             timer1.Interval = 16; // ~60 FPS (was probably 50ms = 20 FPS)
             timer1.Start();
+            c_lbl.Text = trackBar1.Value.ToString();
+            al_lbl.Text = trackBar3.Value.ToString();
+            av_label.Text = trackBar2.Value.ToString();
+
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -58,6 +62,21 @@ namespace flock
                 b.Update();
             }
             this.Invalidate();
+        }
+
+        private void trackBar1_ValueChanged(object sender, EventArgs e)
+        {
+            c_lbl.Text = trackBar1.Value.ToString();
+        }
+
+        private void trackBar3_ValueChanged(object sender, EventArgs e)
+        {
+            al_lbl.Text = trackBar3.Value.ToString();
+        }
+
+        private void trackBar2_ValueChanged(object sender, EventArgs e)
+        {
+            av_label.Text = trackBar2.Value.ToString();
         }
     }
 }
